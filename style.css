@@ -7,6 +7,7 @@
   --wrong: #e0483e;
   --card: #ffffff;
   --border: #d8dee9;
+  --typed: #5b9df0;
 }
 
 * {
@@ -72,10 +73,10 @@ h2 {
 }
 
 .grid-9 button {
-  aspect-ratio: 1;
-  font-size: 1.5rem;
+  padding: 0.4rem 0;
+  font-size: 1.2rem;
   font-weight: 600;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 2px solid var(--border);
   background: var(--bg);
   color: var(--ink);
@@ -153,6 +154,43 @@ h2 {
   margin: 0;
 }
 
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+#time-limit-seconds {
+  width: 100%;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  text-align: center;
+}
+
+#time-limit-seconds:disabled {
+  opacity: 0.5;
+}
+
+.timer {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.timer.timer-low {
+  color: var(--wrong);
+}
+
 .progress {
   font-size: 1.1rem;
   color: #666;
@@ -196,9 +234,10 @@ h2 {
 
 .keypad-display {
   width: 100%;
-  min-height: 3.5rem;
-  font-size: 2.5rem;
+  min-height: 5.5rem;
+  font-size: clamp(3rem, 16vw, 5rem);
   font-weight: 700;
+  color: var(--typed);
   text-align: center;
   background: var(--card);
   border-radius: 14px;
@@ -217,7 +256,7 @@ h2 {
 
 .keypad-grid button {
   padding: 1.1rem;
-  font-size: 1.6rem;
+  font-size: clamp(2rem, 10vw, 3.2rem);
   font-weight: 600;
   border-radius: 14px;
   border: 2px solid var(--border);
@@ -240,7 +279,7 @@ h2 {
 
 .choice-grid button {
   padding: 1.5rem;
-  font-size: 2rem;
+  font-size: clamp(3rem, 18vw, 6rem);
   font-weight: 700;
   border-radius: 16px;
   border: 2px solid var(--border);

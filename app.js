@@ -13,9 +13,12 @@ const el = {
   modeButtons: document.querySelectorAll('.mode-btn'),
   settingsError: document.getElementById('settings-error'),
   startBtn: document.getElementById('start-btn'),
+  timeLimitEnabled: document.getElementById('time-limit-enabled'),
+  timeLimitSeconds: document.getElementById('time-limit-seconds'),
 
   progressLabel: document.getElementById('progress-label'),
   questionLabel: document.getElementById('question-label'),
+  timerLabel: document.getElementById('timer-label'),
   feedback: document.getElementById('feedback'),
 
   keypadArea: document.getElementById('keypad-area'),
@@ -35,6 +38,8 @@ let settings = {
   multipliers: [],
   questionCount: 10,
   mode: 'keypad',
+  timeLimitEnabled: false,
+  timeLimitSeconds: 10,
 };
 
 let quiz = null; // built when practice starts
@@ -47,6 +52,8 @@ function loadSettings() {
       if (Array.isArray(parsed.multipliers)) settings.multipliers = parsed.multipliers;
       if (Number.isInteger(parsed.questionCount)) settings.questionCount = parsed.questionCount;
       if (parsed.mode === 'keypad' || parsed.mode === 'choice') settings.mode = parsed.mode;
+      if (typeof parsed.timeLimitEnabled === 'boolean') settings.timeLimitEnabled = parsed.timeLimitEnabled;
+      if (Number.isInteger(parsed.timeLimitSeconds)) settings.timeLimitSeconds = parsed.timeLimitSeconds;
     }
   } catch (e) {
     // ignore corrupt storage
@@ -94,9 +101,17 @@ function renderModeButtons() {
   });
 }
 
+el.timeLimitEnabled.addEventListener('change', () => {
+  el.timeLimitSeconds.disabled = !el.timeLimitEnabled.checked;
+});
+
 el.startBtn.addEventListener('click', () => {
   const count = parseInt(el.questionCountInput.value, 10);
   settings.questionCount = Number.isFinite(count) && count > 0 ? count : 10;
+
+  settings.timeLimitEnabled = el.timeLimitEnabled.checked;
+  const seconds = parseInt(el.timeLimitSeconds.value, 10);
+  settings.timeLimitSeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : 10;
 
   if (settings.multipliers.length === 0) {
     el.settingsError.hidden = false;
@@ -144,6 +159,8 @@ function startPractice() {
     wrongThisRound: [],
     correctThisRound: [],
     stats: { totalAsked: 0, totalFirstTryCorrect: 0 },
+    timerId: null,
+    timeLeft: 0,
   };
   showScreen('quiz');
   renderQuestion();
@@ -173,6 +190,44 @@ function renderQuestion() {
     el.choiceArea.hidden = false;
     renderChoices(q);
   }
+
+  startAttemptTimer();
+}
+
+// ---------- Per-attempt countdown ----------
+
+function startAttemptTimer() {
+  clearAttemptTimer();
+
+  if (!settings.timeLimitEnabled) {
+    el.timerLabel.hidden = true;
+    return;
+  }
+
+  quiz.timeLeft = settings.timeLimitSeconds;
+  el.timerLabel.hidden = false;
+  updateTimerLabel();
+
+  quiz.timerId = setInterval(() => {
+    quiz.timeLeft -= 1;
+    updateTimerLabel();
+    if (quiz.timeLeft <= 0) {
+      clearAttemptTimer();
+      submitAnswer(null);
+    }
+  }, 1000);
+}
+
+function clearAttemptTimer() {
+  if (quiz.timerId) {
+    clearInterval(quiz.timerId);
+    quiz.timerId = null;
+  }
+}
+
+function updateTimerLabel() {
+  el.timerLabel.textContent = `剩餘時間：${quiz.timeLeft} 秒`;
+  el.timerLabel.classList.toggle('timer-low', quiz.timeLeft <= 3);
 }
 
 // ---------- Keypad mode ----------
@@ -181,7 +236,7 @@ let keypadBuffer = '';
 
 function renderKeypad() {
   keypadBuffer = '';
-  el.keypadDisplay.textContent = ' ';
+  el.keypadDisplay.textContent = ' ';
   el.keypadGrid.innerHTML = '';
 
   const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
@@ -208,7 +263,7 @@ function setKeypadEnabled(enabled) {
 
 el.keypadClear.addEventListener('click', () => {
   keypadBuffer = '';
-  el.keypadDisplay.textContent = ' ';
+  el.keypadDisplay.textContent = ' ';
 });
 
 el.keypadConfirm.addEventListener('click', () => {
@@ -245,8 +300,11 @@ function setChoicesEnabled(enabled) {
 // ---------- Answer handling ----------
 
 function submitAnswer(value) {
+  clearAttemptTimer();
+
   const q = currentQuestion();
-  const isCorrect = value === q.answer;
+  const isTimeout = value === null;
+  const isCorrect = !isTimeout && value === q.answer;
 
   if (isCorrect) {
     showFeedback(true, quiz.attempt === 1 ? '答對了！' : '這次對了！');
@@ -258,11 +316,12 @@ function submitAnswer(value) {
 
   if (quiz.attempt === 1) {
     quiz.attempt = 2;
-    showFeedback(false, '答錯了，再試一次！');
+    showFeedback(false, isTimeout ? '時間到，再試一次！' : '答錯了，再試一次！');
     if (settings.mode === 'keypad') {
       keypadBuffer = '';
-      el.keypadDisplay.textContent = ' ';
+      el.keypadDisplay.textContent = ' ';
     }
+    startAttemptTimer();
     return;
   }
 
@@ -308,12 +367,11 @@ function endRound() {
     return;
   }
 
+  // next round doubles: N wrong questions -> 2N total (N wrong + N padding)
   const nextRound = quiz.wrongThisRound.slice();
-  const needed = settings.questionCount - nextRound.length;
-  if (needed > 0) {
-    const padPool = quiz.correctThisRound.length > 0 ? quiz.correctThisRound : quiz.pool;
-    nextRound.push(...sampleWithReplacement(padPool, needed));
-  }
+  const padCount = nextRound.length;
+  const padPool = quiz.correctThisRound.length > 0 ? quiz.correctThisRound : quiz.pool;
+  nextRound.push(...sampleWithReplacement(padPool, padCount));
 
   quiz.round += 1;
   quiz.roundQuestions = nextRound;
@@ -340,4 +398,7 @@ loadSettings();
 renderMultiplierGrid();
 renderModeButtons();
 el.questionCountInput.value = settings.questionCount;
+el.timeLimitEnabled.checked = settings.timeLimitEnabled;
+el.timeLimitSeconds.value = settings.timeLimitSeconds;
+el.timeLimitSeconds.disabled = !settings.timeLimitEnabled;
 showScreen('settings');

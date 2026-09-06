@@ -32,6 +32,15 @@
       </div>
     </div>
 
+    <div class="settings-block">
+      <h2>作答時間限制</h2>
+      <label class="checkbox-row">
+        <input type="checkbox" id="time-limit-enabled">
+        <span>限制每次作答的秒數</span>
+      </label>
+      <input type="number" id="time-limit-seconds" min="3" max="60" value="10" disabled>
+    </div>
+
     <p id="settings-error" class="error-msg" hidden>請至少選擇一個倍數</p>
 
     <button type="button" id="start-btn" class="primary-btn">開始練習</button>
@@ -42,6 +51,8 @@
     <div class="progress" id="progress-label"></div>
 
     <div class="question" id="question-label"></div>
+
+    <div id="timer-label" class="timer" hidden></div>
 
     <div id="feedback" class="feedback" hidden></div>
 
