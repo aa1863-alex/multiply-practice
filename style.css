@@ -1,0 +1,272 @@
+:root {
+  --bg: #f5f7fb;
+  --ink: #1f2430;
+  --primary: #3b6fed;
+  --primary-ink: #ffffff;
+  --correct: #2fa84f;
+  --wrong: #e0483e;
+  --card: #ffffff;
+  --border: #d8dee9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.screen {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  margin: 0;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem 0;
+  color: #555;
+}
+
+.settings-block {
+  width: 100%;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.grid-9 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.grid-9 button {
+  aspect-ratio: 1;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.grid-9 button.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-ink);
+}
+
+#question-count {
+  width: 100%;
+  font-size: 1.5rem;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  text-align: center;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.mode-btn.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-ink);
+  font-weight: 600;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 14px;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-ink);
+  cursor: pointer;
+}
+
+.primary-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.error-msg {
+  color: var(--wrong);
+  font-weight: 600;
+  margin: 0;
+}
+
+.progress {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.question {
+  font-size: clamp(3rem, 15vw, 7rem);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1;
+}
+
+.feedback {
+  font-size: 1.4rem;
+  font-weight: 700;
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+}
+
+.feedback.correct {
+  color: var(--correct);
+  background: rgba(47,168,79,0.12);
+}
+
+.feedback.wrong {
+  color: var(--wrong);
+  background: rgba(224,72,62,0.12);
+}
+
+.answer-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.answer-area[hidden] {
+  display: none;
+}
+
+.keypad-display {
+  width: 100%;
+  min-height: 3.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--card);
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.keypad-grid button {
+  padding: 1.1rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.keypad-actions {
+  width: 100%;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.choice-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+}
+
+.choice-grid button {
+  padding: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.choice-grid button:disabled,
+.keypad-grid button:disabled,
+.grid-9 button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stats {
+  width: 100%;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.25rem;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  text-align: center;
+}
+
+@media (min-width: 480px) {
+  .grid-9 button {
+    font-size: 1.75rem;
+  }
+}

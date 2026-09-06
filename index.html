@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>九九乘法表練習</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="app">
+
+  <!-- 設定畫面 -->
+  <section id="screen-settings" class="screen">
+    <h1>九九乘法表練習</h1>
+
+    <div class="settings-block">
+      <h2>選擇要練習的倍數</h2>
+      <div id="multiplier-grid" class="grid-9"></div>
+    </div>
+
+    <div class="settings-block">
+      <h2>題數</h2>
+      <input type="number" id="question-count" min="1" max="50" value="10">
+    </div>
+
+    <div class="settings-block">
+      <h2>作答方式</h2>
+      <div class="mode-toggle">
+        <button type="button" class="mode-btn" data-mode="keypad">數字鍵盤</button>
+        <button type="button" class="mode-btn" data-mode="choice">四選一</button>
+      </div>
+    </div>
+
+    <p id="settings-error" class="error-msg" hidden>請至少選擇一個倍數</p>
+
+    <button type="button" id="start-btn" class="primary-btn">開始練習</button>
+  </section>
+
+  <!-- 練習畫面 -->
+  <section id="screen-quiz" class="screen" hidden>
+    <div class="progress" id="progress-label"></div>
+
+    <div class="question" id="question-label"></div>
+
+    <div id="feedback" class="feedback" hidden></div>
+
+    <!-- 數字鍵盤模式 -->
+    <div id="keypad-area" class="answer-area" hidden>
+      <div id="keypad-display" class="keypad-display">&nbsp;</div>
+      <div class="keypad-grid" id="keypad-grid"></div>
+      <div class="keypad-actions">
+        <button type="button" id="keypad-clear" class="secondary-btn">清除</button>
+        <button type="button" id="keypad-confirm" class="primary-btn">確認</button>
+      </div>
+    </div>
+
+    <!-- 四選一模式 -->
+    <div id="choice-area" class="answer-area" hidden>
+      <div class="choice-grid" id="choice-grid"></div>
+    </div>
+  </section>
+
+  <!-- 完成畫面 -->
+  <section id="screen-done" class="screen" hidden>
+    <h1>🎉 練習完成！</h1>
+    <div class="stats" id="stats-label"></div>
+    <button type="button" id="restart-btn" class="primary-btn">再練習一次</button>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
