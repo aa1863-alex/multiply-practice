@@ -294,6 +294,14 @@ h2 {
   cursor: not-allowed;
 }
 
+.score {
+  font-size: clamp(4rem, 20vw, 7rem);
+  font-weight: 800;
+  color: var(--wrong);
+  text-shadow: 0 3px 0 rgba(0,0,0,0.08);
+  line-height: 1;
+}
+
 .stats {
   width: 100%;
   background: var(--card);

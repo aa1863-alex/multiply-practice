@@ -30,6 +30,7 @@ const el = {
   choiceArea: document.getElementById('choice-area'),
   choiceGrid: document.getElementById('choice-grid'),
 
+  scoreLabel: document.getElementById('score-label'),
   statsLabel: document.getElementById('stats-label'),
   restartBtn: document.getElementById('restart-btn'),
 };
@@ -74,7 +75,7 @@ function showScreen(name) {
 
 function renderMultiplierGrid() {
   el.multiplierGrid.innerHTML = '';
-  for (let n = 1; n <= 9; n++) {
+  for (let n = 2; n <= 9; n++) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = String(n);
@@ -131,7 +132,7 @@ el.restartBtn.addEventListener('click', () => {
 function buildPool() {
   const pool = [];
   for (const a of settings.multipliers) {
-    for (let b = 1; b <= 9; b++) {
+    for (let b = 2; b <= 9; b++) {
       pool.push({ a, b, answer: a * b });
     }
   }
@@ -383,11 +384,11 @@ function endRound() {
 
 function showDone() {
   const { totalAsked, totalFirstTryCorrect } = quiz.stats;
-  const accuracy = totalAsked > 0 ? Math.round((totalFirstTryCorrect / totalAsked) * 100) : 100;
+  const score = totalAsked > 0 ? Math.round((totalFirstTryCorrect / totalAsked) * 100) : 100;
+  el.scoreLabel.textContent = `${score} 分`;
   el.statsLabel.innerHTML = `
     總共練習了 ${quiz.round} 輪<br>
-    總作答題數：${totalAsked} 題<br>
-    一次答對率：${accuracy}%
+    總作答題數：${totalAsked} 題
   `;
   showScreen('done');
 }
