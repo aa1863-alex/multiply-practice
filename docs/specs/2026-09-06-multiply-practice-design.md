@@ -83,10 +83,12 @@
 
 ## 部署流程
 
-1. 在 `/Users/klscratch1/multiply-practice` 建立 git repo 並 commit 程式碼。
-2. 建立 GitHub repo `multiply-practice`（public 或 private 由使用者當下決定）並 push。
-3. 使用者自行到 Cloudflare Dashboard 連接該 GitHub repo，建立 Cloudflare Pages 專案，並自訂網域/專案名稱（Cloudflare 端設定不由 Claude 代為操作）。
-4. 之後每次 `git push` 到 GitHub，Cloudflare Pages 會自動重新部署（GitHub 整合式自動部署，非本使用者一般偏好的 wrangler CLI 手動部署方式，此專案為例外，使用者已明確要求）。
+程式碼一樣維護在 GitHub repo `aa1863-alex/multiply-practice`（`git push` 保留版本歷史），但**實際上線**改回**直接用 `wrangler deploy` 部署**：
+
+1. 原本計畫是 GitHub 連接 Cloudflare 自動部署，但 2026-09-06 實測發現使用者在 Cloudflare Dashboard 建立的其實是 **Cloudflare Workers**（不是 Pages）的一次性匯入，並沒有接上真正的 Git 持續部署（GitHub repo 沒有 webhook，Worker 也沒有 Builds/Git 設定）。第二次 `git push` 之後線上內容完全沒有更新，才發現這個問題。
+2. 因此改成：程式碼還是 push 到 GitHub 留存歷史，但每次要讓網站更新時，另外在 `/Users/klscratch1/multiply-practice` 執行 `npx wrangler deploy` 直接部署最新程式碼到既有的 Worker `multiply-practice`。
+3. 專案根目錄有 `wrangler.toml`（宣告成純靜態資源的 Worker，`[assets] directory = "."`）與 `.assetsignore`（排除 `.git`、`.wrangler`、`docs`、`wrangler.toml`、`README.md` 等非網站本體檔案，避免被一起部署上去）。
+4. 網站網址：`https://multiply-practice.aa1863.workers.dev`，以及使用者自訂的網域 `https://99.smartchu321.win`（皆指向同一個 Worker）。
 
 ## 不在範圍內（YAGNI）
 
