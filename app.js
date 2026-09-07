@@ -2,9 +2,11 @@
 
 const STORAGE_KEY = 'multiply-practice-settings';
 const NEXT_DELAY_MS = 900;
+const REVEAL_DELAY_MS = 3000;
 
 const el = {
   settingsScreen: document.getElementById('screen-settings'),
+  reviewScreen: document.getElementById('screen-review'),
   quizScreen: document.getElementById('screen-quiz'),
   doneScreen: document.getElementById('screen-done'),
 
@@ -16,6 +18,11 @@ const el = {
   timeLimitEnabled: document.getElementById('time-limit-enabled'),
   timeLimitSeconds: document.getElementById('time-limit-seconds'),
 
+  reviewTables: document.getElementById('review-tables'),
+  reviewHomeBtn: document.getElementById('review-home-btn'),
+  readyBtn: document.getElementById('ready-btn'),
+
+  quizHomeBtn: document.getElementById('quiz-home-btn'),
   progressLabel: document.getElementById('progress-label'),
   questionLabel: document.getElementById('question-label'),
   timerLabel: document.getElementById('timer-label'),
@@ -24,7 +31,6 @@ const el = {
   keypadArea: document.getElementById('keypad-area'),
   keypadDisplay: document.getElementById('keypad-display'),
   keypadGrid: document.getElementById('keypad-grid'),
-  keypadClear: document.getElementById('keypad-clear'),
   keypadConfirm: document.getElementById('keypad-confirm'),
 
   choiceArea: document.getElementById('choice-area'),
@@ -67,8 +73,14 @@ function saveSettings() {
 
 function showScreen(name) {
   el.settingsScreen.hidden = name !== 'settings';
+  el.reviewScreen.hidden = name !== 'review';
   el.quizScreen.hidden = name !== 'quiz';
   el.doneScreen.hidden = name !== 'done';
+}
+
+function goHome() {
+  clearAttemptTimer();
+  showScreen('settings');
 }
 
 // ---------- Settings screen ----------
@@ -120,11 +132,46 @@ el.startBtn.addEventListener('click', () => {
   }
 
   saveSettings();
-  startPractice();
+  showReview();
 });
 
 el.restartBtn.addEventListener('click', () => {
   showScreen('settings');
+});
+
+el.reviewHomeBtn.addEventListener('click', goHome);
+el.quizHomeBtn.addEventListener('click', goHome);
+
+// ---------- Review screen ----------
+
+function showReview() {
+  el.reviewTables.innerHTML = '';
+  const sorted = settings.multipliers.slice().sort((a, b) => a - b);
+
+  sorted.forEach((a) => {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+
+    const heading = document.createElement('h3');
+    heading.textContent = `${a} 的乘法表`;
+    card.appendChild(heading);
+
+    const list = document.createElement('ul');
+    for (let b = 2; b <= 9; b++) {
+      const li = document.createElement('li');
+      li.textContent = `${a} × ${b} = ${a * b}`;
+      list.appendChild(li);
+    }
+    card.appendChild(list);
+
+    el.reviewTables.appendChild(card);
+  });
+
+  showScreen('review');
+}
+
+el.readyBtn.addEventListener('click', () => {
+  startPractice();
 });
 
 // ---------- Question pool ----------
@@ -220,7 +267,7 @@ function startAttemptTimer() {
 }
 
 function clearAttemptTimer() {
-  if (quiz.timerId) {
+  if (quiz && quiz.timerId) {
     clearInterval(quiz.timerId);
     quiz.timerId = null;
   }
@@ -240,32 +287,40 @@ function renderKeypad() {
   el.keypadDisplay.textContent = ' ';
   el.keypadGrid.innerHTML = '';
 
-  const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-  digits.forEach((d) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = String(d);
-    btn.addEventListener('click', () => {
-      if (keypadBuffer.length >= 2) return;
-      keypadBuffer += String(d);
-      el.keypadDisplay.textContent = keypadBuffer;
-    });
-    el.keypadGrid.appendChild(btn);
+  for (let d = 1; d <= 9; d++) {
+    el.keypadGrid.appendChild(makeKeypadDigitButton(d));
+  }
+  el.keypadGrid.appendChild(makeKeypadDigitButton(0));
+
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.textContent = '清除';
+  clearBtn.className = 'keypad-clear-btn';
+  clearBtn.addEventListener('click', () => {
+    keypadBuffer = '';
+    el.keypadDisplay.textContent = ' ';
   });
+  el.keypadGrid.appendChild(clearBtn);
 
   setKeypadEnabled(true);
 }
 
-function setKeypadEnabled(enabled) {
-  el.keypadGrid.querySelectorAll('button').forEach((b) => (b.disabled = !enabled));
-  el.keypadClear.disabled = !enabled;
-  el.keypadConfirm.disabled = !enabled;
+function makeKeypadDigitButton(d) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = String(d);
+  btn.addEventListener('click', () => {
+    if (keypadBuffer.length >= 2) return;
+    keypadBuffer += String(d);
+    el.keypadDisplay.textContent = keypadBuffer;
+  });
+  return btn;
 }
 
-el.keypadClear.addEventListener('click', () => {
-  keypadBuffer = '';
-  el.keypadDisplay.textContent = ' ';
-});
+function setKeypadEnabled(enabled) {
+  el.keypadGrid.querySelectorAll('button').forEach((b) => (b.disabled = !enabled));
+  el.keypadConfirm.disabled = !enabled;
+}
 
 el.keypadConfirm.addEventListener('click', () => {
   if (keypadBuffer === '') return;
@@ -326,10 +381,16 @@ function submitAnswer(value) {
     return;
   }
 
-  showFeedback(false, `正確答案是 ${q.answer}`);
+  revealAnswer(q);
   disableInputs();
   resolveQuestion(false, q);
-  setTimeout(advance, NEXT_DELAY_MS);
+  setTimeout(advance, REVEAL_DELAY_MS);
+}
+
+function revealAnswer(q) {
+  el.feedback.hidden = true;
+  el.questionLabel.innerHTML =
+    `${q.a} × ${q.b} = <span class="reveal-answer">${q.answer}</span>`;
 }
 
 function showFeedback(correct, text) {

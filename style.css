@@ -7,7 +7,7 @@
   --wrong: #e0483e;
   --card: #ffffff;
   --border: #d8dee9;
-  --typed: #5b9df0;
+  --typed: #1d3f91;
 }
 
 * {
@@ -44,6 +44,23 @@ html, body {
 
 .screen[hidden] {
   display: none;
+}
+
+.screen-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.home-btn {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
 }
 
 h1 {
@@ -264,10 +281,10 @@ h2 {
   cursor: pointer;
 }
 
-.keypad-actions {
-  width: 100%;
-  display: flex;
-  gap: 0.6rem;
+.keypad-grid .keypad-clear-btn {
+  grid-column: span 2;
+  font-size: clamp(1.3rem, 6vw, 1.8rem);
+  background: var(--bg);
 }
 
 .choice-grid {
@@ -292,6 +309,40 @@ h2 {
 .grid-9 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.review-tables {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.review-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.review-card h3 {
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.review-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.reveal-answer {
+  color: var(--wrong);
 }
 
 .score {

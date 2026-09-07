@@ -46,8 +46,25 @@
     <button type="button" id="start-btn" class="primary-btn">開始練習</button>
   </section>
 
+  <!-- 乘法表複習畫面 -->
+  <section id="screen-review" class="screen" hidden>
+    <div class="screen-header">
+      <button type="button" class="home-btn" id="review-home-btn">← 回首頁</button>
+    </div>
+
+    <h1>先複習一下乘法表</h1>
+
+    <div id="review-tables" class="review-tables"></div>
+
+    <button type="button" id="ready-btn" class="primary-btn">我準備好了，按了再開始</button>
+  </section>
+
   <!-- 練習畫面 -->
   <section id="screen-quiz" class="screen" hidden>
+    <div class="screen-header">
+      <button type="button" class="home-btn" id="quiz-home-btn">← 回首頁</button>
+    </div>
+
     <div class="progress" id="progress-label"></div>
 
     <div class="question" id="question-label"></div>
@@ -60,10 +77,7 @@
     <div id="keypad-area" class="answer-area" hidden>
       <div id="keypad-display" class="keypad-display">&nbsp;</div>
       <div class="keypad-grid" id="keypad-grid"></div>
-      <div class="keypad-actions">
-        <button type="button" id="keypad-clear" class="secondary-btn">清除</button>
-        <button type="button" id="keypad-confirm" class="primary-btn">確認</button>
-      </div>
+      <button type="button" id="keypad-confirm" class="primary-btn">確認</button>
     </div>
 
     <!-- 四選一模式 -->
