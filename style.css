@@ -285,6 +285,21 @@ h2 {
   grid-column: span 2;
   font-size: clamp(1.3rem, 6vw, 1.8rem);
   background: var(--bg);
+  min-height: 4.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+#keypad-confirm {
+  /* match the digit buttons' padding + font-driven height so Confirm's
+     thickness lines up with Clear (which stretches to the 0-row's height) */
+  min-height: calc(2.2rem + clamp(2rem, 10vw, 3.2rem) * 1.2);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .choice-grid {
@@ -339,6 +354,44 @@ h2 {
   font-size: 1.05rem;
   line-height: 1.7;
   text-align: center;
+}
+
+/* fewer selected multipliers -> more room per card, so scale everything up */
+.review-tables.density-1 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.review-tables.density-1 .review-card {
+  padding: 1.5rem;
+}
+
+.review-tables.density-1 .review-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.review-tables.density-1 .review-card ul {
+  font-size: 1.6rem;
+  line-height: 2;
+}
+
+.review-tables.density-2 {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+}
+
+.review-tables.density-2 .review-card {
+  padding: 1.1rem;
+}
+
+.review-tables.density-2 .review-card h3 {
+  font-size: 1.3rem;
+}
+
+.review-tables.density-2 .review-card ul {
+  font-size: 1.25rem;
+  line-height: 1.85;
 }
 
 .reveal-answer {

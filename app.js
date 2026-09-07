@@ -148,6 +148,9 @@ function showReview() {
   el.reviewTables.innerHTML = '';
   const sorted = settings.multipliers.slice().sort((a, b) => a - b);
 
+  const density = sorted.length <= 2 ? 'density-1' : sorted.length <= 4 ? 'density-2' : 'density-3';
+  el.reviewTables.className = `review-tables ${density}`;
+
   sorted.forEach((a) => {
     const card = document.createElement('div');
     card.className = 'review-card';
@@ -389,6 +392,10 @@ function submitAnswer(value) {
 
 function revealAnswer(q) {
   el.feedback.hidden = true;
+  if (settings.mode === 'keypad') {
+    keypadBuffer = '';
+    el.keypadDisplay.textContent = ' ';
+  }
   el.questionLabel.innerHTML =
     `${q.a} × ${q.b} = <span class="reveal-answer">${q.answer}</span>`;
 }
