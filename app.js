@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'multiply-practice-settings';
-const NEXT_DELAY_MS = 900;
+const NEXT_DELAY_MS = 1000;
 const REVEAL_DELAY_MS = 3000;
 
 const el = {
@@ -367,6 +367,7 @@ function submitAnswer(value) {
 
   if (isCorrect) {
     showFeedback(true, quiz.attempt === 1 ? '答對了！' : '這次對了！');
+    showAnswerInQuestion(q, 'reveal-correct');
     disableInputs();
     resolveQuestion(quiz.attempt === 1, q);
     setTimeout(advance, NEXT_DELAY_MS);
@@ -384,20 +385,20 @@ function submitAnswer(value) {
     return;
   }
 
-  revealAnswer(q);
-  disableInputs();
-  resolveQuestion(false, q);
-  setTimeout(advance, REVEAL_DELAY_MS);
-}
-
-function revealAnswer(q) {
   el.feedback.hidden = true;
   if (settings.mode === 'keypad') {
     keypadBuffer = '';
     el.keypadDisplay.textContent = ' ';
   }
+  showAnswerInQuestion(q, 'reveal-answer');
+  disableInputs();
+  resolveQuestion(false, q);
+  setTimeout(advance, REVEAL_DELAY_MS);
+}
+
+function showAnswerInQuestion(q, className) {
   el.questionLabel.innerHTML =
-    `${q.a} × ${q.b} = <span class="reveal-answer">${q.answer}</span>`;
+    `${q.a} × ${q.b} = <span class="${className}">${q.answer}</span>`;
 }
 
 function showFeedback(correct, text) {

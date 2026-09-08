@@ -398,6 +398,10 @@ h2 {
   color: var(--wrong);
 }
 
+.reveal-correct {
+  color: var(--primary);
+}
+
 .score {
   font-size: clamp(4rem, 20vw, 7rem);
   font-weight: 800;
