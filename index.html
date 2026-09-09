@@ -12,6 +12,13 @@
 
   <!-- 設定畫面 -->
   <section id="screen-settings" class="screen">
+    <div class="settings-header">
+      <label class="sound-toggle-compact">
+        <span>音效</span>
+        <input type="checkbox" id="sound-enabled" checked>
+      </label>
+    </div>
+
     <h1>九九乘法表練習</h1>
 
     <div class="settings-block">
@@ -19,9 +26,19 @@
       <div id="multiplier-grid" class="grid-9"></div>
     </div>
 
-    <div class="settings-block">
-      <h2>題數</h2>
-      <input type="number" id="question-count" min="1" max="50" value="10">
+    <div class="settings-row">
+      <div class="settings-block">
+        <h2>題數</h2>
+        <input type="number" id="question-count" min="1" max="50" value="10">
+      </div>
+
+      <div class="settings-block">
+        <h2>作答時間限制</h2>
+        <div class="inline-check-row">
+          <input type="checkbox" id="time-limit-enabled">
+          <input type="number" id="time-limit-seconds" min="3" max="60" value="10" disabled>
+        </div>
+      </div>
     </div>
 
     <div class="settings-block">
@@ -30,23 +47,6 @@
         <button type="button" class="mode-btn" data-mode="keypad">數字鍵盤</button>
         <button type="button" class="mode-btn" data-mode="choice">四選一</button>
       </div>
-    </div>
-
-    <div class="settings-block">
-      <h2>作答時間限制</h2>
-      <label class="checkbox-row">
-        <input type="checkbox" id="time-limit-enabled">
-        <span>限制每次作答的秒數</span>
-      </label>
-      <input type="number" id="time-limit-seconds" min="3" max="60" value="10" disabled>
-    </div>
-
-    <div class="settings-block">
-      <h2>音效</h2>
-      <label class="checkbox-row">
-        <input type="checkbox" id="sound-enabled">
-        <span>答對／答錯時播放音效</span>
-      </label>
     </div>
 
     <p id="settings-error" class="error-msg" hidden>請至少選擇一個倍數</p>

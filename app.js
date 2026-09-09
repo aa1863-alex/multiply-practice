@@ -49,7 +49,7 @@ let settings = {
   mode: 'keypad',
   timeLimitEnabled: false,
   timeLimitSeconds: 10,
-  soundEnabled: false,
+  soundEnabled: true,
 };
 
 let quiz = null; // built when practice starts

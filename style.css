@@ -63,6 +63,30 @@ html, body {
   cursor: pointer;
 }
 
+.settings-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sound-toggle-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.sound-toggle-compact input {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 h1 {
   font-size: clamp(1.5rem, 5vw, 2.25rem);
   margin: 0;
@@ -81,6 +105,35 @@ h2 {
   border-radius: 16px;
   padding: 1rem 1.25rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.settings-row {
+  width: 100%;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.settings-row .settings-block {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.inline-check-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.inline-check-row input[type="checkbox"] {
+  width: 1.3rem;
+  height: 1.3rem;
+  flex-shrink: 0;
+}
+
+.inline-check-row input[type="number"] {
+  flex: 1;
+  min-width: 0;
 }
 
 .grid-9 {
@@ -154,35 +207,10 @@ h2 {
   cursor: not-allowed;
 }
 
-.secondary-btn {
-  flex: 1;
-  padding: 1rem;
-  font-size: 1.1rem;
-  border-radius: 14px;
-  border: 2px solid var(--border);
-  background: var(--card);
-  color: var(--ink);
-  cursor: pointer;
-}
-
 .error-msg {
   color: var(--wrong);
   font-weight: 600;
   margin: 0;
-}
-
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1.05rem;
-  margin-bottom: 0.6rem;
-  cursor: pointer;
-}
-
-.checkbox-row input {
-  width: 1.3rem;
-  height: 1.3rem;
 }
 
 #time-limit-seconds {
@@ -439,8 +467,9 @@ h2 {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: clamp(1.8rem, 10vw, 3.3rem);
+  font-weight: 700;
+  line-height: 1.6;
   text-align: center;
 }
 
