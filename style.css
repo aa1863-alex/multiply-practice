@@ -420,6 +420,30 @@ h2 {
   text-align: center;
 }
 
+.wrong-review {
+  width: 100%;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.wrong-review h3 {
+  margin: 0 0 0.6rem 0;
+  text-align: center;
+  font-size: 1.15rem;
+  color: var(--wrong);
+}
+
+.wrong-review ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  text-align: center;
+}
+
 @media (min-width: 480px) {
   .grid-9 button {
     font-size: 1.75rem;

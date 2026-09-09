@@ -17,6 +17,7 @@ const el = {
   startBtn: document.getElementById('start-btn'),
   timeLimitEnabled: document.getElementById('time-limit-enabled'),
   timeLimitSeconds: document.getElementById('time-limit-seconds'),
+  soundEnabled: document.getElementById('sound-enabled'),
 
   reviewTables: document.getElementById('review-tables'),
   reviewHomeBtn: document.getElementById('review-home-btn'),
@@ -37,6 +38,7 @@ const el = {
   choiceGrid: document.getElementById('choice-grid'),
 
   scoreLabel: document.getElementById('score-label'),
+  wrongReview: document.getElementById('wrong-review'),
   statsLabel: document.getElementById('stats-label'),
   restartBtn: document.getElementById('restart-btn'),
 };
@@ -47,6 +49,7 @@ let settings = {
   mode: 'keypad',
   timeLimitEnabled: false,
   timeLimitSeconds: 10,
+  soundEnabled: false,
 };
 
 let quiz = null; // built when practice starts
@@ -61,6 +64,7 @@ function loadSettings() {
       if (parsed.mode === 'keypad' || parsed.mode === 'choice') settings.mode = parsed.mode;
       if (typeof parsed.timeLimitEnabled === 'boolean') settings.timeLimitEnabled = parsed.timeLimitEnabled;
       if (Number.isInteger(parsed.timeLimitSeconds)) settings.timeLimitSeconds = parsed.timeLimitSeconds;
+      if (typeof parsed.soundEnabled === 'boolean') settings.soundEnabled = parsed.soundEnabled;
     }
   } catch (e) {
     // ignore corrupt storage
@@ -125,6 +129,8 @@ el.startBtn.addEventListener('click', () => {
   settings.timeLimitEnabled = el.timeLimitEnabled.checked;
   const seconds = parseInt(el.timeLimitSeconds.value, 10);
   settings.timeLimitSeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : 10;
+
+  settings.soundEnabled = el.soundEnabled.checked;
 
   if (settings.multipliers.length === 0) {
     el.settingsError.hidden = false;
@@ -209,6 +215,7 @@ function startPractice() {
     attempt: 1,
     wrongThisRound: [],
     correctThisRound: [],
+    everWrong: new Map(), // unique questions missed at least once, keyed by "a-b"
     stats: { totalAsked: 0, totalFirstTryCorrect: 0 },
     timerId: null,
     timeLeft: 0,
@@ -356,6 +363,44 @@ function setChoicesEnabled(enabled) {
   el.choiceGrid.querySelectorAll('button').forEach((b) => (b.disabled = !enabled));
 }
 
+// ---------- Sound effects ----------
+
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioCtx();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type, startDelay) {
+  const ctx = getAudioCtx();
+  const startTime = ctx.currentTime + (startDelay || 0);
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.15, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+
+function playSound(correct) {
+  if (!settings.soundEnabled) return;
+  if (correct) {
+    playTone(880, 0.12, 'sine', 0);
+    playTone(1320, 0.15, 'sine', 0.1);
+  } else {
+    playTone(220, 0.25, 'sawtooth', 0);
+  }
+}
+
 // ---------- Answer handling ----------
 
 function submitAnswer(value) {
@@ -386,6 +431,7 @@ function submitAnswer(value) {
   }
 
   el.feedback.hidden = true;
+  playSound(false);
   if (settings.mode === 'keypad') {
     keypadBuffer = '';
     el.keypadDisplay.textContent = ' ';
@@ -405,6 +451,7 @@ function showFeedback(correct, text) {
   el.feedback.hidden = false;
   el.feedback.textContent = text;
   el.feedback.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+  playSound(correct);
 }
 
 function disableInputs() {
@@ -419,6 +466,7 @@ function resolveQuestion(firstTryCorrect, q) {
     quiz.correctThisRound.push(q);
   } else {
     quiz.wrongThisRound.push(q);
+    quiz.everWrong.set(`${q.a}-${q.b}`, q);
   }
 }
 
@@ -455,6 +503,17 @@ function showDone() {
   const { totalAsked, totalFirstTryCorrect } = quiz.stats;
   const score = totalAsked > 0 ? Math.round((totalFirstTryCorrect / totalAsked) * 100) : 100;
   el.scoreLabel.textContent = `${score} 分`;
+
+  const wrongQuestions = Array.from(quiz.everWrong.values()).sort((x, y) => x.a - y.a || x.b - y.b);
+  if (wrongQuestions.length > 0) {
+    el.wrongReview.hidden = false;
+    const items = wrongQuestions.map((q) => `<li>${q.a} × ${q.b} = ${q.answer}</li>`).join('');
+    el.wrongReview.innerHTML = `<h3>常錯的題目</h3><ul>${items}</ul>`;
+  } else {
+    el.wrongReview.hidden = true;
+    el.wrongReview.innerHTML = '';
+  }
+
   el.statsLabel.innerHTML = `
     總共練習了 ${quiz.round} 輪<br>
     總作答題數：${totalAsked} 題
@@ -471,4 +530,5 @@ el.questionCountInput.value = settings.questionCount;
 el.timeLimitEnabled.checked = settings.timeLimitEnabled;
 el.timeLimitSeconds.value = settings.timeLimitSeconds;
 el.timeLimitSeconds.disabled = !settings.timeLimitEnabled;
+el.soundEnabled.checked = settings.soundEnabled;
 showScreen('settings');

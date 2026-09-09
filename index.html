@@ -41,6 +41,14 @@
       <input type="number" id="time-limit-seconds" min="3" max="60" value="10" disabled>
     </div>
 
+    <div class="settings-block">
+      <h2>音效</h2>
+      <label class="checkbox-row">
+        <input type="checkbox" id="sound-enabled">
+        <span>答對／答錯時播放音效</span>
+      </label>
+    </div>
+
     <p id="settings-error" class="error-msg" hidden>請至少選擇一個倍數</p>
 
     <button type="button" id="start-btn" class="primary-btn">開始練習</button>
@@ -90,6 +98,7 @@
   <section id="screen-done" class="screen" hidden>
     <h1>🎉 練習完成！</h1>
     <div class="score" id="score-label"></div>
+    <div id="wrong-review" class="wrong-review" hidden></div>
     <div class="stats" id="stats-label"></div>
     <button type="button" id="restart-btn" class="primary-btn">再練習一次</button>
   </section>
