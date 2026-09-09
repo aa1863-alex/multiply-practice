@@ -136,6 +136,14 @@ h2 {
   min-width: 0;
 }
 
+.inline-check-row.heading-row {
+  margin-bottom: 0.75rem;
+}
+
+.inline-check-row.heading-row h2 {
+  margin: 0;
+}
+
 .grid-9 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
