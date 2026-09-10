@@ -258,14 +258,6 @@ h2 {
   color: var(--wrong);
 }
 
-.quiz-info {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-}
-
 .progress {
   font-size: 1.1rem;
   color: #666;
@@ -509,57 +501,6 @@ h2 {
   }
 }
 
-/* iPad-landscape (and other wide/short viewports): put the question
-   and the answer pad side by side instead of stacking everything
-   vertically, and size text off the viewport height so it still
-   fits without scrolling. */
-@media (orientation: landscape) {
-  #screen-quiz.screen {
-    max-width: 1100px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-  }
-
-  #screen-quiz .quiz-info {
-    flex: 1;
-    min-width: 0;
-    gap: 0.6rem;
-  }
-
-  #screen-quiz .answer-area {
-    flex: 1;
-    min-width: 0;
-    gap: 0.6rem;
-  }
-
-  #screen-quiz .question {
-    font-size: clamp(2rem, 11vh, 4.5rem);
-  }
-
-  #screen-quiz .keypad-display {
-    min-height: 3rem;
-    font-size: clamp(1.6rem, 9vh, 3rem);
-  }
-
-  #screen-quiz .keypad-grid button {
-    padding: 0.5rem;
-    font-size: clamp(1.3rem, 6vh, 2.2rem);
-  }
-
-  #screen-quiz .keypad-grid .keypad-clear-btn {
-    min-height: 0;
-    font-size: clamp(1rem, 4vh, 1.5rem);
-  }
-
-  #screen-quiz #keypad-confirm {
-    min-height: calc(1.4rem + clamp(1.3rem, 6vh, 2.2rem) * 1.2);
-    font-size: 1.1rem;
-  }
-
-  #screen-quiz .choice-grid button {
-    padding: 0.6rem;
-    font-size: clamp(1.6rem, 10vh, 3.5rem);
-  }
-}
+/* When the quiz screen's natural content is taller than the viewport
+   (e.g. iPad landscape), app.js shrinks it uniformly with `zoom` so
+   everything stays visible without rearranging the layout. */

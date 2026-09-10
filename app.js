@@ -291,7 +291,23 @@ function renderQuestion() {
   }
 
   startAttemptTimer();
+  fitQuizScreen();
 }
+
+// ---------- Shrink-to-fit (e.g. iPad landscape) ----------
+
+function fitQuizScreen() {
+  if (el.quizScreen.hidden) return;
+  el.quizScreen.style.zoom = 1;
+  const available = window.innerHeight - 56;
+  const natural = el.quizScreen.scrollHeight;
+  if (natural > available) {
+    el.quizScreen.style.zoom = Math.max(0.5, available / natural);
+  }
+}
+
+window.addEventListener('resize', fitQuizScreen);
+window.addEventListener('orientationchange', fitQuizScreen);
 
 // ---------- Per-attempt countdown ----------
 
