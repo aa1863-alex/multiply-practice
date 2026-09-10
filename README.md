@@ -27,13 +27,16 @@ python3 -m http.server 8000
 
 ## 部署
 
-網站部署在 **Cloudflare Workers**（Worker 名稱 `multiply-practice`），**push 到 GitHub 不會自動更新網站**，必須另外執行：
+網站部署在 **Cloudflare Workers**（Worker 名稱 `multiply-practice`），並透過 Workers Builds 連接這個 GitHub repo：
 
-```bash
-npx wrangler deploy
-```
+- **push 到 `main` 分支後，Cloudflare 會自動執行 `npx wrangler deploy` 更新網站**（約 1 分鐘）
+- push 到其他分支只會產生預覽版本，不影響正式網站
+- 建置紀錄：Cloudflare Dashboard → Workers & Pages → `multiply-practice` → Settings → Build → View build history
+- 建置失敗時，網站會維持上一個成功的版本
 
-`wrangler.toml` 將整個專案目錄宣告為靜態資源，`.assetsignore` 排除 `docs/`、`README.md` 等非網站檔案。因此只修改文件時不需要重新部署。
+`wrangler.toml` 將整個專案目錄宣告為靜態資源，`.assetsignore` 排除 `docs/`、`README.md` 等非網站檔案，所以只改文件雖然也會觸發建置，網站內容不會改變。
+
+> ⚠️ 請不要再從本機執行 `npx wrangler deploy`。它會把「這台電腦目前的檔案」直接蓋到線上，可能讓線上版本跟 GitHub 不一致。
 
 ## 在多台電腦上開發
 
@@ -44,7 +47,6 @@ GitHub repo 是唯一的正本，每台電腦都照這個流程：
 ```bash
 gh repo clone aa1863-alex/multiply-practice
 cd multiply-practice
-npx wrangler login   # 登入 Cloudflare，每台電腦只需做一次
 ```
 
 **每次開始修改前**
@@ -58,10 +60,7 @@ git pull
 ```bash
 git add -A
 git commit -m "feat: 描述這次修改"
-git push
-npx wrangler deploy  # 要讓網站更新時才需要
+git push   # push 到 main 後網站會自動更新
 ```
-
-> ⚠️ 部署前一定要先 `git pull` 並確認 `git status` 乾淨、已經 push。`wrangler deploy` 會把「這台電腦目前的檔案」直接蓋到線上，如果這台電腦的程式碼比較舊，就會把別台電腦上線的新版本蓋掉。
 
 詳細設計請見 [docs/specs/2026-09-06-multiply-practice-design.md](docs/specs/2026-09-06-multiply-practice-design.md)。

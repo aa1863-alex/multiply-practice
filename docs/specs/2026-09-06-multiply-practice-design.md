@@ -116,13 +116,20 @@
 
 ## 部署流程
 
-程式碼一樣維護在 GitHub repo `aa1863-alex/multiply-practice`（`git push` 保留版本歷史），但**實際上線**改回**直接用 `wrangler deploy` 部署**：
+程式碼維護在 GitHub repo `aa1863-alex/multiply-practice`，**push 到 `main` 分支即由 Cloudflare Workers Builds 自動部署**。
 
-1. 原本計畫是 GitHub 連接 Cloudflare 自動部署，但 2026-09-06 實測發現使用者在 Cloudflare Dashboard 建立的其實是 **Cloudflare Workers**（不是 Pages）的一次性匯入，並沒有接上真正的 Git 持續部署（GitHub repo 沒有 webhook，Worker 也沒有 Builds/Git 設定）。第二次 `git push` 之後線上內容完全沒有更新，才發現這個問題。
-2. 因此改成：程式碼還是 push 到 GitHub 留存歷史，但每次要讓網站更新時，另外在專案目錄執行 `npx wrangler deploy` 直接部署最新程式碼到既有的 Worker `multiply-practice`。
-   - 2026-09-10 起可能在多台電腦上開發：每台電腦需各自 `npx wrangler login` 一次；部署前務必先 `git pull` 並確認已 push，避免用舊程式碼蓋掉線上較新的版本（操作流程見 README「在多台電腦上開發」一節）。
+1. **現行做法（2026-09-10 起）**：在 Cloudflare Dashboard 將 Worker `multiply-practice` 的 Settings → Build 連接此 GitHub repo，設定如下：
+   - Build command：留空（純靜態網站，不需建置）
+   - Deploy command：`npx wrangler deploy`
+   - Version command（非正式分支）：`npx wrangler versions upload`
+   - Root directory：`/`
+   - Production branch：`main`，並開啟非正式分支建置（產生預覽版本）
+   - Build watch paths：include `*`
+   - GitHub 端需安裝「Cloudflare Workers and Pages」GitHub App，且 Repository access 必須包含 `multiply-practice`（初次設定時漏勾，導致 push 後完全沒有觸發建置）
+2. 因為可能在多台電腦上開發，GitHub 為唯一正本，**不再從本機執行 `npx wrangler deploy`**，避免用未 push 或較舊的程式碼蓋掉線上版本（操作流程見 README「在多台電腦上開發」一節）。
 3. 專案根目錄有 `wrangler.toml`（宣告成純靜態資源的 Worker，`[assets] directory = "."`）與 `.assetsignore`（排除 `.git`、`.wrangler`、`docs`、`wrangler.toml`、`README.md` 等非網站本體檔案，避免被一起部署上去）。
 4. 網站網址：`https://multiply-practice.aa1863.workers.dev`，以及使用者自訂的網域 `https://99.smartchu321.win`（皆指向同一個 Worker）。
+5. **歷史紀錄**：原本計畫是 GitHub 連接 Cloudflare 自動部署，但 2026-09-06 實測發現當時在 Cloudflare Dashboard 建立的是 **Cloudflare Workers**（不是 Pages）的一次性匯入，並沒有接上真正的 Git 持續部署，push 後線上內容沒有更新；因此 2026-09-06 ~ 2026-09-10 期間改為手動在本機執行 `npx wrangler deploy`，直到上述 Workers Builds 設定完成。
 
 ## 不在範圍內（YAGNI）
 
