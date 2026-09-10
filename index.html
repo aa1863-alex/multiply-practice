@@ -29,7 +29,12 @@
     <div class="settings-row">
       <div class="settings-block">
         <h2>題數</h2>
+        <div class="mode-toggle">
+          <button type="button" class="mode-btn count-mode-btn" data-count-mode="custom">自訂題數</button>
+          <button type="button" class="mode-btn count-mode-btn" data-count-mode="all">全部題目</button>
+        </div>
         <input type="number" id="question-count" min="1" max="50" value="10">
+        <div id="all-count-label" class="all-count-label" hidden></div>
       </div>
 
       <div class="settings-block">
@@ -69,17 +74,19 @@
 
   <!-- 練習畫面 -->
   <section id="screen-quiz" class="screen" hidden>
-    <div class="screen-header">
-      <button type="button" class="home-btn" id="quiz-home-btn">← 回首頁</button>
+    <div class="quiz-info">
+      <div class="screen-header">
+        <button type="button" class="home-btn" id="quiz-home-btn">← 回首頁</button>
+      </div>
+
+      <div class="progress" id="progress-label"></div>
+
+      <div class="question" id="question-label"></div>
+
+      <div id="timer-label" class="timer" hidden></div>
+
+      <div id="feedback" class="feedback" hidden></div>
     </div>
-
-    <div class="progress" id="progress-label"></div>
-
-    <div class="question" id="question-label"></div>
-
-    <div id="timer-label" class="timer" hidden></div>
-
-    <div id="feedback" class="feedback" hidden></div>
 
     <!-- 數字鍵盤模式 -->
     <div id="keypad-area" class="answer-area" hidden>

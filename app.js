@@ -12,7 +12,9 @@ const el = {
 
   multiplierGrid: document.getElementById('multiplier-grid'),
   questionCountInput: document.getElementById('question-count'),
-  modeButtons: document.querySelectorAll('.mode-btn'),
+  countModeButtons: document.querySelectorAll('.count-mode-btn'),
+  allCountLabel: document.getElementById('all-count-label'),
+  modeButtons: document.querySelectorAll('.mode-btn[data-mode]'),
   settingsError: document.getElementById('settings-error'),
   startBtn: document.getElementById('start-btn'),
   timeLimitEnabled: document.getElementById('time-limit-enabled'),
@@ -46,6 +48,7 @@ const el = {
 let settings = {
   multipliers: [],
   questionCount: 10,
+  questionCountMode: 'custom',
   mode: 'keypad',
   timeLimitEnabled: false,
   timeLimitSeconds: 10,
@@ -61,6 +64,9 @@ function loadSettings() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed.multipliers)) settings.multipliers = parsed.multipliers;
       if (Number.isInteger(parsed.questionCount)) settings.questionCount = parsed.questionCount;
+      if (parsed.questionCountMode === 'custom' || parsed.questionCountMode === 'all') {
+        settings.questionCountMode = parsed.questionCountMode;
+      }
       if (parsed.mode === 'keypad' || parsed.mode === 'choice') settings.mode = parsed.mode;
       if (typeof parsed.timeLimitEnabled === 'boolean') settings.timeLimitEnabled = parsed.timeLimitEnabled;
       if (Number.isInteger(parsed.timeLimitSeconds)) settings.timeLimitSeconds = parsed.timeLimitSeconds;
@@ -103,6 +109,7 @@ function renderMultiplierGrid() {
       else settings.multipliers.splice(idx, 1);
       btn.classList.toggle('selected');
       el.settingsError.hidden = true;
+      updateAllCountLabel();
     });
     el.multiplierGrid.appendChild(btn);
   }
@@ -116,6 +123,28 @@ function renderModeButtons() {
       el.modeButtons.forEach((b) => b.classList.toggle('selected', b === btn));
     });
   });
+}
+
+function renderCountModeButtons() {
+  el.countModeButtons.forEach((btn) => {
+    btn.classList.toggle('selected', btn.dataset.countMode === settings.questionCountMode);
+    btn.addEventListener('click', () => {
+      settings.questionCountMode = btn.dataset.countMode;
+      el.countModeButtons.forEach((b) => b.classList.toggle('selected', b === btn));
+      applyCountModeUI();
+    });
+  });
+}
+
+function applyCountModeUI() {
+  const isAll = settings.questionCountMode === 'all';
+  el.questionCountInput.hidden = isAll;
+  el.allCountLabel.hidden = !isAll;
+  if (isAll) updateAllCountLabel();
+}
+
+function updateAllCountLabel() {
+  el.allCountLabel.textContent = `全部題目共 ${buildPool().length} 題`;
 }
 
 el.timeLimitEnabled.addEventListener('change', () => {
@@ -203,14 +232,26 @@ function sampleWithReplacement(pool, count) {
   return result;
 }
 
+function shuffleArray(arr) {
+  const copy = arr.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 // ---------- Practice flow ----------
 
 function startPractice() {
   const pool = buildPool();
+  const roundQuestions = settings.questionCountMode === 'all'
+    ? shuffleArray(pool)
+    : sampleWithReplacement(pool, settings.questionCount);
   quiz = {
     pool,
     round: 1,
-    roundQuestions: sampleWithReplacement(pool, settings.questionCount),
+    roundQuestions,
     index: 0,
     attempt: 1,
     wrongThisRound: [],
@@ -526,6 +567,8 @@ function showDone() {
 loadSettings();
 renderMultiplierGrid();
 renderModeButtons();
+renderCountModeButtons();
+applyCountModeUI();
 el.questionCountInput.value = settings.questionCount;
 el.timeLimitEnabled.checked = settings.timeLimitEnabled;
 el.timeLimitSeconds.value = settings.timeLimitSeconds;
