@@ -1,7 +1,7 @@
 # 九九乘法表練習網頁 — 設計規格
 
 日期：2026-09-06（2026-09-06 追加調整：方格尺寸、作答秒數限制、放大作答文字、第二輪起題數改為錯題數的兩倍；再追加：倍數選項移除 1、題目跳過 ×1、完成畫面改用得分制；2026-09-07 再追加：新增乘法表複習畫面、回首頁按鈕、鍵盤版面調整、答錯兩次改為在題目上直接揭曉答案；同日再追加：揭曉答案時清空鍵盤誤答、確認鍵厚度對齊清除鍵、複習表依倍數數量放大版面；2026-09-08 再追加：答對時也在題目後面用藍字顯示答案並保留原提示文字，停留 1 秒換下一題；2026-09-09 再追加：完成畫面列出常錯題目與解答、答對/答錯可選音效；同日再追加：音效改成右上角小勾選框（預設打勾）、題數與作答時間限制同排、常錯題目字級再放大）
-專案資料夾：`/Users/klscratch1/multiply-practice`
+原始碼：GitHub repo `aa1863-alex/multiply-practice`（可能在多台電腦上 clone 開發，不綁定特定本機路徑）
 
 ## 背景與目的
 
@@ -19,6 +19,8 @@
   ├── style.css
   ├── app.js
   ├── docs/specs/2026-09-06-multiply-practice-design.md
+  ├── wrangler.toml
+  ├── .assetsignore
   ├── .gitignore
   └── README.md
   ```
@@ -86,14 +88,29 @@
 // 一題
 { a: 2, b: 7, answer: 14 }
 
+// 設定（存入 localStorage，key 為 'multiply-practice-settings'）
+{
+  multipliers: [2, 7],
+  questionCount: 10,
+  mode: 'keypad' | 'choice',
+  timeLimitEnabled: false,
+  timeLimitSeconds: 10,
+  soundEnabled: true
+}
+
 // 練習狀態
 {
-  settings: { multipliers: [2, 7], questionCount: 10, mode: 'keypad' | 'choice' },
+  pool: [...題目...],             // 選定倍數 × 2~9 的題目池
   round: 1,
-  currentQueue: [...題目...],   // 這一輪剩餘題目
-  wrongThisRound: [...題目...], // 這一輪答錯（含補答對也算錯）的題目
+  roundQuestions: [...題目...],   // 這一輪的題目
+  index: 0,                       // 目前第幾題
+  attempt: 1,                     // 這一題第幾次作答（1 或 2）
+  wrongThisRound: [...題目...],   // 這一輪答錯（含補答對也算錯）的題目
   correctThisRound: [...題目...],
-  stats: { totalAttempts, totalFirstTryCorrect }
+  everWrong: Map,                 // 整次練習曾經答錯的題目（去重，key 為 "a-b"），供完成畫面列出
+  stats: { totalAsked, totalFirstTryCorrect },
+  timerId: null,
+  timeLeft: 0
 }
 ```
 
@@ -102,7 +119,8 @@
 程式碼一樣維護在 GitHub repo `aa1863-alex/multiply-practice`（`git push` 保留版本歷史），但**實際上線**改回**直接用 `wrangler deploy` 部署**：
 
 1. 原本計畫是 GitHub 連接 Cloudflare 自動部署，但 2026-09-06 實測發現使用者在 Cloudflare Dashboard 建立的其實是 **Cloudflare Workers**（不是 Pages）的一次性匯入，並沒有接上真正的 Git 持續部署（GitHub repo 沒有 webhook，Worker 也沒有 Builds/Git 設定）。第二次 `git push` 之後線上內容完全沒有更新，才發現這個問題。
-2. 因此改成：程式碼還是 push 到 GitHub 留存歷史，但每次要讓網站更新時，另外在 `/Users/klscratch1/multiply-practice` 執行 `npx wrangler deploy` 直接部署最新程式碼到既有的 Worker `multiply-practice`。
+2. 因此改成：程式碼還是 push 到 GitHub 留存歷史，但每次要讓網站更新時，另外在專案目錄執行 `npx wrangler deploy` 直接部署最新程式碼到既有的 Worker `multiply-practice`。
+   - 2026-09-10 起可能在多台電腦上開發：每台電腦需各自 `npx wrangler login` 一次；部署前務必先 `git pull` 並確認已 push，避免用舊程式碼蓋掉線上較新的版本（操作流程見 README「在多台電腦上開發」一節）。
 3. 專案根目錄有 `wrangler.toml`（宣告成純靜態資源的 Worker，`[assets] directory = "."`）與 `.assetsignore`（排除 `.git`、`.wrangler`、`docs`、`wrangler.toml`、`README.md` 等非網站本體檔案，避免被一起部署上去）。
 4. 網站網址：`https://multiply-practice.aa1863.workers.dev`，以及使用者自訂的網域 `https://99.smartchu321.win`（皆指向同一個 Worker）。
 
@@ -110,5 +128,5 @@
 
 - 不做使用者帳號、不做多人/雲端進度同步。
 - 不做除了 ×（乘法）以外的運算（無加減除）。
-- 不做音效、動畫特效等額外裝飾。
+- 不做動畫特效等額外裝飾（音效已於 2026-09-09 納入範圍，見設定畫面與作答回饋兩節）。
 - 不支援反向題目形式（N × 選定數字）。
