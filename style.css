@@ -235,6 +235,12 @@ h2 {
   margin: 0;
 }
 
+.version-info {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b6f7a;
+}
+
 #time-limit-seconds {
   width: 100%;
   font-size: 1.25rem;
